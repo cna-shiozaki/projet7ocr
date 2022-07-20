@@ -1,0 +1,215 @@
+<mvc:View
+	controllerName="cna.projet7.controller.Home"
+	displayBlock="true"
+	xmlns="sap.m"
+	xmlns:fb="sap.ui.comp.filterbar"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:l="sap.ui.layout" 
+	xmlns:microchart="sap.suite.ui.microchart"
+	xmlns:core="sap.ui.core"
+	xmlns:mvc="sap.ui.core.mvc">
+	<Page
+		id="page"
+		title="{i18n>title}"
+		
+		enableScrolling="true">
+		<headerContent>
+			<Image src="{img>/homecredit}" width="4em"/>
+			<Image src="{img>/ocr}" width="12em"/>
+			<Button
+				icon="sap-icon://hint"
+				press=".onOpenDialog"/>
+		</headerContent>
+		<content>
+
+		<HeaderContainer id="headerContainer"  class="sapUiResponsiveMargin" scrollStep="200" showDividers="true" backgroundDesign="Transparent" >
+
+				<HBox class="sapUiSmallMargin" height='100%' justifyContent ='Start'>
+					<Label text="Numéro de demande de prêt" labelFor="input_id_contrat" class="sapUiSmallMarginTop sapUiSmallMarginBeginEnd"/>
+					<Input id="input_id_contrat" width="90px" value="{filter>/loan_id}" submit=".onSearch" />
+					<Text id="emptytext" text="     " class="sapUiLargeMarginBegin"/>  <!-- <=== Je sais que je ne devrais pas faire ça, mais je suis à la bourre.-->
+					<Button id="button_search" text="Rechercher" press=".onSearch" class="sapUiLargeMarginBegin"/>
+					<Link id="link_random" text="Prendre un prêt au hasard" press=".onRandomIdSearch" class="sapUiSmallMarginTop sapUiSmallMarginBegin" subtle="true" />
+				</HBox>
+		</HeaderContainer>
+
+		<MessagePage text="Rien à afficher" description="Veuillez d'abord lancer une recherche" showHeader="false" visible="{page_config>/first_search_not_already}"/>
+
+		<Panel headerText="{i18n>loanPanelTitle}" class="sapUiResponsiveMargin" visible="{= !${page_config>/first_search_not_already} }">
+					<headerToolbar>
+						<Toolbar>
+							<Title text="{i18n>formLoanID} {loan_data>/sk_id_curr}" level="H2"/>
+						</Toolbar>
+					</headerToolbar>
+				<l:VerticalLayout width="100%">
+
+
+					<HeaderContainer id="headerContainer2" scrollStep="200" showDividers="false" class="sapUiResponsivePadding">
+						<FlexBox height="100px" alignItems="Center" alignContent="Stretch" justifyContent="Start" >
+							
+							<ObjectStatus 
+								class="sapMObjectStatusLarge sapUiLargeMarginBegin"
+								text="Crédit accordé"
+								state="Success"
+								icon="sap-icon://sys-enter-2"
+								visible="{= ${loan_data>/prediction} === 0 ? true : false}"  />
+							<ObjectStatus 
+								class="sapMObjectStatusLarge sapUiLargeMarginBegin"
+								text="Crédit refusé"
+								state="Error"
+								icon="sap-icon://sys-cancel-2"
+								visible="{= ${loan_data>/prediction} === 0 ? false : true}"  />
+						</FlexBox>
+					</HeaderContainer>
+
+					<l:VerticalLayout width="100%" class="gridWrapper">
+					
+						<l:Grid containerQuery="true" position="Left" defaultSpan="XL5 L5 M5 S12" defaultIndent="XL1 L1 M1 S1">					
+
+							<f:SimpleForm 
+								editable="false"
+								layout="ResponsiveGridLayout"
+								labelSpanL="3" labelSpanM="3" emptySpanL="4" emptySpanM="4"
+								columnsL="1" columnsM="1">
+								<f:content>
+
+									<Label text="{i18n>situation_famille}"/>
+									<HBox>
+										<ObjectStatus
+											class="sapUiTinyMarginEnd"
+											text="{= ${loan_data>/code_gender} === 1 ? 'Femme' : 'Homme'}"
+											inverted="true"
+											state="Indication05" />
+
+										<ObjectStatus
+											class="sapUiTinyMarginEnd"
+											text="{parts:['loan_data>/name_family_status','loan_data>/code_gender'], formatter:'.formatter.name_family_status'}"
+											inverted="true"
+											state="Indication01" />
+
+										<ObjectStatus
+											class="sapUiTinyMarginEnd"
+											text="{= Math.round(${loan_data>/days_birth} / 365) } ans"
+											inverted="true"
+											state="Indication06" />		
+
+										<ObjectStatus
+											class="sapUiTinyMarginEnd"
+											text="{loan_data>/cnt_children} {= ${loan_data>/cnt_children} > 1 ? 'enfants' : 'enfant'}"
+											inverted="true"
+											state="Indication07" />						
+									
+									
+									</HBox>
+
+									<Label text="{i18n>name_contract_type}"/>
+									<Text text="{path:'loan_data>/name_contract_type', formatter:'.formatter.name_contract_type'}"/>
+								
+
+									<Label text="{i18n>amt_credit}"/>
+									<ObjectNumber class="sapUiNoMargin" unit="CZK" 
+									number="{ 
+											path:'loan_data>/amt_credit',
+											type: 'sap.ui.model.type.Float'
+											}"  />
+
+									<Label text="{i18n>amt_income_total}"/>
+									<ObjectNumber class="sapUiNoMargin" unit="CZK" 
+									number="{ 
+											path:'loan_data>/amt_income_total',
+											type: 'sap.ui.model.type.Float'
+											}"  />
+
+									<Label text="{i18n>payment_rate}"/>
+									<ObjectNumber class="sapUiNoMargin" unit="%" 
+									number="{ 
+											path:'loan_data>/payment_rate',
+											type: 'sap.ui.model.type.Float',
+											formatter:'.formatPaymentRate'
+											}"  />			
+
+									<Label text="{i18n>name_income_type}"/>
+									<Text text="{parts:['loan_data>/name_income_type','loan_data>/code_gender'], formatter:'.formatter.name_income_type'}"/>
+
+									<Label text="{i18n>occupation_type}"/>
+									<Text text="{parts:['loan_data>/occupation_type','loan_data>/code_gender'], formatter:'.formatter.occupation_type'}"/>
+
+								</f:content>
+							</f:SimpleForm>
+
+							<VBox>
+								<HBox>
+									<NumericContent size="S" value="{loan_data>/customer_score}%" 
+													valueColor="{ path:'loan_data>/customer_score', formatter:'.scoreValueColor' }" press="press" icon="sap-icon://payment-approval" />				
+
+									<FlexBox>
+										<Text text=" de probabilité que le client rembourse ce prêt" class="sapUiMediumMarginTop sapUiTinyMarginBegin"/>
+									</FlexBox>																
+								</HBox>
+
+								<HBox class="sapUiLargeMarginBegin">
+									<microchart:BulletMicroChart size="L" scale="%" targetValue="85" forecastValue="{loan_data>/customer_score}" 
+									class="sapUiTinyMarginBegin sapUiTinyMarginBottom" 
+									scaleColor="Light"
+									mode="Actual" showDeltaValue="false" showValueMarker="false" press="press">
+										<microchart:actual>
+											<microchart:BulletMicroChartData value="{loan_data>/customer_score}" color="{= ${loan_data>/customer_score} > 85 ? 'Good' : 'Error' }"/>
+										</microchart:actual>
+
+									</microchart:BulletMicroChart>
+									<Text text="Seuil dépassé" class="sapUiSmallMarginBegin sapUiMediumMarginTop" visible="{= ${loan_data>/customer_score} > 85 }"/>
+									<Text text="Seuil non atteint" class="sapUiSmallMarginBegin sapUiMediumMarginTop" visible="{= 85 > ${loan_data>/customer_score}  }"/>								
+								</HBox>
+
+								<FlexBox  alignItems="Center" class="sapUiSmallMargin">
+									<Button id="explication_button" text="Expliquer davantage" press=".onExplicabilityPress" ariaHasPopup="Menu" class="sapUiMediumMarginBegin"/>
+								</FlexBox> 									
+							</VBox>
+						</l:Grid>
+					</l:VerticalLayout>	
+		
+				</l:VerticalLayout>
+		</Panel >
+
+		<Panel headerText="Explicabilité" class="sapUiResponsiveMargin" visible="{= !${page_config>/first_search_not_already} }">
+			<l:VerticalLayout
+					width="100%"
+					class="gridWrapper">
+
+				<l:Grid containerQuery="true" position="Center" defaultSpan="XL6 L6 M6 S12">
+
+					<VBox class="sapUiTinyMarginBottom">
+						<Text text="Impact des variables les plus importantes pour la détermination du score :"/>
+						<FlexBox height="300px" width="500px" alignItems="Center" class="sapUiSmallMargin">
+							<items>
+								<microchart:InteractiveBarChart 
+									id="limeInteractiveBarChart" 
+									labelWidth="60%" 
+									selectionEnabled="false" 
+									press="press" 
+									bars="{path: 'explicability_img>/lime_values' , templateShareable:false }"  >
+										<microchart:bars>
+											<microchart:InteractiveBarChartBar 
+												label="{explicability_img>name}" 
+												value="{explicability_img>value}" 
+												color="{= ${explicability_img>value} > 0 ? 'Error' : 'Good' }" />
+										</microchart:bars>	
+								</microchart:InteractiveBarChart>
+							</items>
+						</FlexBox>
+					</VBox>
+
+					<VBox class="sapUiTinyMarginBottom">
+						<Text text="Boite à moustache de quelques variables :"/>
+						<Image id="imgBoxPlot" src="{explicability_img>/box_plot_url}" decorative="false" width="90%"/>
+					</VBox>
+				</l:Grid>
+
+
+
+			</l:VerticalLayout>
+		</Panel >
+
+		</content>
+	</Page>
+</mvc:View>

@@ -1,0 +1,9 @@
+specVersion: '2.6'
+metadata:
+  name: Projet7
+type: application
+framework:
+  name: SAPUI5
+  version: "1.103.0"
+  libraries:
+    - name: themelib_sap_horizon

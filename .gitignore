@@ -1,0 +1,12 @@
+/spa/dist/
+/spa/dist/**
+/spa/node_modules/**
+/spa/node_modules/
+/zstuff/
+.vscode
+/data/input/
+/data/ouput/
+/data/input/**
+/data/ouput/**
+data/output/loan_projet7.db
+data/output/loans.csv

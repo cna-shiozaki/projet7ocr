@@ -1,0 +1,8 @@
+<core:FragmentDefinition
+		xmlns="sap.m"
+		xmlns:core="sap.ui.core">
+	<Menu itemSelected="onExplicabilityMenuAction">
+		<MenuItem text="Résumé SHAP"/>
+		<MenuItem text="Encore du SHAP..."/>
+	</Menu>
+</core:FragmentDefinition>

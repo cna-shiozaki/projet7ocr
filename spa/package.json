@@ -1,0 +1,17 @@
+{
+  "name": "projet7",
+  "version": "1.0.0",
+  "author": "Christophe NACIRI",
+  "description": "Projet 7",
+  "private": true,
+  "scripts": {
+    "start": "ui5 serve",
+    "build": "ui5 build",
+    "lint": "eslint webapp"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@ui5/cli": "^2.14.4",
+    "eslint": "^4.19.1"
+  }
+}
