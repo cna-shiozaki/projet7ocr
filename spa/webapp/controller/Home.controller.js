@@ -26,29 +26,66 @@ sap.ui.define([
 				  line4: "line4"
 				}
 			  };
-			  var oModel = new JSONModel(oData);
-			  this.getView().setModel(oModel,"bing");
+			
+			var oModel = new JSONModel(oData);
+			var oView = this.getView();
+			oView.setModel(oModel,"bing");
 
 			  // Préparons un modèle JSON pour les données filtre
-			  this.getView().setModel(new JSONModel({loan_id:100001}),"filter");
+			  oView.setModel(new JSONModel({loan_id:100001}),"filter");
 			  
-			  this.getView().setModel(new JSONModel({ first_search_not_already: true }),"page_config");
+			  oView.setModel(new JSONModel({ first_search_not_already: true }),"page_config");
 
-			  var insuranceLogo = sap.ui.require.toUrl("cna/projet7/img/insurance.png");
-			  var ocrLogo = sap.ui.require.toUrl("cna/projet7/img/ocr.png");
-			  this.getView().setModel(new JSONModel( {insurance : insuranceLogo, ocr: ocrLogo}  ), "img");			  
+			var insuranceLogo = sap.ui.require.toUrl("cna/projet7/img/insurance.png");
+			var ocrLogo = sap.ui.require.toUrl("cna/projet7/img/ocr.png");
+			oView.setModel(new JSONModel( {insurance : insuranceLogo, ocr: ocrLogo}  ), "img");			  
 
 			  /* Modèle JSON des images d'explicabilité */
-			  var shap_summary = sap.ui.require.toUrl("cna/projet7/model/img/shap.png");
-			  let oExplicabilityJSONModel = new JSONModel( 
+			var shap_summary = sap.ui.require.toUrl("cna/projet7/model/img/shap.png");
+			let oExplicabilityJSONModel = new JSONModel( 
 				{ shap_summary : shap_summary,
 				  shap_force   : "",
 				  lime_values  : [],
 				  box_plot_url : "" } );
-			  this.getView().setModel(oExplicabilityJSONModel, "explicability_img");
+			oView.setModel(oExplicabilityJSONModel, "explicability_img");
 
-			  jQuery.sap.delayedCall(0, this, function () {this.getView().byId("input_id_contrat").focus(); }); 
+			jQuery.sap.delayedCall(0, this, function () {this.getView().byId("input_id_contrat").focus(); }); 
 
+			  /* Lister les colonnes possibles */
+			let oAllColumnsNamesJSONModel = new JSONModel();
+			let source_path = window.location.href.split("webapp")[0]+"all_columns_names/";			
+			oAllColumnsNamesJSONModel.loadData( source_path ).then( 
+					function(d1,d2){			
+						var oReceivedData = oAllColumnsNamesJSONModel.getData();
+						oReceivedData = JSON.parse(oReceivedData)
+						oView.getModel("all_columns").setProperty("/columns",oReceivedData)
+					});
+			this.getView().setModel(new JSONModel({"columns":[]}),"all_columns");
+			
+			let oSpecificFieldModel = new JSONModel({ "field" :""});
+			oView.setModel(oSpecificFieldModel, "specific_field");
+			oView.byId("specific_field_combo_box").attachSelectionChange( oView, this.specificFieldChanged );
+
+		},
+
+		specificFieldChanged: function(oStuff, oView){
+			let selected_column = oStuff.getSource().getValue();
+			let oSpecificFieldModel = oView.getModel("specific_field");
+			
+			let vSkIdCurr = oView.getModel("loan_data").getProperty("/sk_id_curr")
+
+			let source_path = window.location.href.split("webapp")[0]+"specific_field/"+ vSkIdCurr + "/" + selected_column;		
+			let oJSONModel = new JSONModel();
+			oJSONModel.loadData( source_path ).then( 
+				function(){ 
+					oSpecificFieldModel.setProperty("/field",oJSONModel.getData());
+				}
+			 ).catch(
+				function(){console.log("error");}
+			 ); 
+
+
+			
 		},
 
 		getScoreColor: function(){
@@ -103,6 +140,8 @@ sap.ui.define([
 					oFormViewModel.setData( oReceivedData  );
 
 					oView.getModel("page_config").setProperty("/first_search_not_already",false);
+					oView.byId("specific_field_combo_box").clearSelection();
+					oView.getModel("specific_field").setProperty("/field","");
 				}
 
 

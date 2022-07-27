@@ -69,3 +69,19 @@ class DataAccess():
             return "" 
 
         
+
+    def query_all_columns_names(self):
+
+        # Se connecter à la base de données
+        conn = sqlite3.connect(self.db_path)
+
+        # Exécuter une requête (et la récupérer dans un DF)
+        result_df = pd.read_sql_query("PRAGMA table_info(loans)", conn )
+
+        # Fermer
+        conn.close()
+
+        if len(result_df) > 0:
+            return [ col for col in result_df["name"] if col not in ["index","TARGET","SK_ID_CURR"] ][:150]
+        else:
+            return []         

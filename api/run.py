@@ -16,8 +16,8 @@ app = FastAPI()
 
 # Monter la Single-Page application buildée sous /webapp
 script_dir = os.path.dirname(__file__)
-st_abs_file_path = os.path.join(script_dir, "../spa/dist")
-#st_abs_file_path = os.path.join(script_dir, "../spa/webapp")
+#st_abs_file_path = os.path.join(script_dir, "../spa/dist")
+st_abs_file_path = os.path.join(script_dir, "../spa/webapp")
 app.mount("/webapp", StaticFiles(directory=st_abs_file_path), name="static")
 
 # Instancier le Prediction Engine, et le préparer
@@ -98,6 +98,27 @@ def get_box_plot(loan_id : int):
     except Exception as error:
         return { "error" : error }
 
+
+########################################################################
+#### END-POINT : READ SPECIFIC FIELD  ##################################
+########################################################################
+@app.get("/specific_field/{loan_id}/{specific_field}")
+def get_specific_field(loan_id : int, specific_field : str):
+    try:
+         return projet7Server.fetch_specific_field(loan_id, specific_field)
+    except Exception as error:
+        return { "error" : error }
+
+
+########################################################################
+#### END-POINT : ALL COLUMNS NAMES  ####################################
+########################################################################
+@app.get("/all_columns_names/")
+def get_all_columns_names():
+    try:
+         return projet7Server.fetch_column_names()
+    except Exception as error:
+        return { "error" : error }
 
 @app.get("/exemple/")
 def get_exemple():

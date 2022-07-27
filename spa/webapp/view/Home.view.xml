@@ -23,7 +23,6 @@
 		<content>
 
 		<HeaderContainer id="headerContainer"  class="sapUiResponsiveMargin" scrollStep="200" showDividers="true" backgroundDesign="Transparent" >
-
 				<HBox class="sapUiSmallMargin" height='100%' justifyContent ='Start'>
 					<Label text="Numéro de demande de prêt" labelFor="input_id_contrat" class="sapUiSmallMarginTop sapUiSmallMarginBeginEnd"/>
 					<Input id="input_id_contrat" width="90px" value="{filter>/loan_id}" submit=".onSearch" />
@@ -134,6 +133,18 @@
 									<Label text="{i18n>occupation_type}"/>
 									<Text text="{parts:['loan_data>/occupation_type','loan_data>/code_gender'], formatter:'.formatter.occupation_type'}"/>
 
+									<Label text="Autre champ"/>
+									<HBox>
+									<ComboBox
+										id="specific_field_combo_box"
+										items="{
+											path: 'all_columns>/columns'
+										}"
+										width="200em">
+										<core:Item key="{all_columns>column_name}" text="{all_columns>column_name}" />
+									</ComboBox>
+									<Text text="{specific_field>/field}" class="sapUiSmallMarginTop sapUiSmallMarginBegin"/>
+									</HBox>
 								</f:content>
 							</f:SimpleForm>
 

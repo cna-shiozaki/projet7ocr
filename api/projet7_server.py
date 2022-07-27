@@ -79,6 +79,15 @@ class Projet7Server():
 
         return self.box_plot_maker.build_boxplot(loan_series)
 
+    def fetch_specific_field(self, loan_id, specific_field):
+        loan_series = self.data_access.query_from_loan_id( loan_id=loan_id )
+
+        return loan_series.loc[specific_field]
+
+
+    def fetch_column_names(self):
+        return json.dumps( [ { "column_name" : e } for e in self.data_access.query_all_columns_names()  ] )
+
 
 def get_categorical_name(loan_series, prefix):
     appropriate_cols = [ col for col in loan_series.index if col.startswith(prefix)]
