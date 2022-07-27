@@ -16,8 +16,8 @@ app = FastAPI()
 
 # Monter la Single-Page application buildée sous /webapp
 script_dir = os.path.dirname(__file__)
-#st_abs_file_path = os.path.join(script_dir, "../spa/dist")
-st_abs_file_path = os.path.join(script_dir, "../spa/webapp")
+st_abs_file_path = os.path.join(script_dir, "../spa/dist")
+#st_abs_file_path = os.path.join(script_dir, "../spa/webapp")
 app.mount("/webapp", StaticFiles(directory=st_abs_file_path), name="static")
 
 # Instancier le Prediction Engine, et le préparer
